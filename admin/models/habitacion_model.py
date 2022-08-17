@@ -1,5 +1,4 @@
 import sqlite3
-from flask import Flask
 from models.db import conectar
 
 
@@ -19,7 +18,7 @@ def create_habitacion(id_habitacion, numero, precio):
         else:
             query = """
                 insert into Habitaciones (Numero, Precio, Calificacion, Activo)
-                values (?, ?, 0, 1)
+                values (?, ?, Null, 1)
             """
             datos = (numero, precio)
 
@@ -48,11 +47,11 @@ def select_habitacion(id_habitacion=None):
         cursor = conn.cursor()
 
         if id_habitacion:
-            cursor.execute("select Id, Numero, Precio, Calificacion, Activo from Habitaciones where Id = ?", [id_habitacion])
+            cursor.execute("select Row_Number() over (order by Id) as Row, Id, Numero, Precio, IfNull(Calificacion, '') as Calificacion, Activo from Habitaciones where Id = ?", [id_habitacion])
+            resultado = cursor.fetchone()
         else:
-            cursor.execute("select Id, Numero, Precio, Calificacion, Activo from Habitaciones where Activo = 1")
-
-        resultado = cursor.fetchall()
+            cursor.execute("select Row_Number() over (order by Activo desc) as Row, Id, Numero, Precio, IfNull(Calificacion, '') as Calificacion, Activo from Habitaciones")
+            resultado = cursor.fetchall()  
     except Exception as error:
         print(f'select_habitacion {error}')
         return None
@@ -64,7 +63,7 @@ def select_habitacion(id_habitacion=None):
 #fin consultar habitacion
 
 
-def remove_habitacion(id_habitacion):
+def update_estado_habitacion(id_habitacion, estado):
     try:
         conn = conectar()
         cursor = conn.cursor()
@@ -72,11 +71,11 @@ def remove_habitacion(id_habitacion):
         if id_habitacion:
             query = """
                 update Habitaciones
-                    set Activo = 0
+                    set Activo = ?
                 where Id = ?
             """
         
-        cursor.execute(query, [id_habitacion])
+        cursor.execute(query, (estado, id_habitacion))
         conn.commit()
     except Exception as error:
         print(f'insert habitacion {error}')
@@ -105,6 +104,6 @@ def actualizar_precio_habitacion(precio, connection):
         connection.commit()
     except Exception as error:
         raise error
-    #finally:
-        #cursor.close()
-        #connection.close()
+    finally:
+        cursor.close()
+        connection.close()

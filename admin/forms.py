@@ -1,8 +1,9 @@
 from multiprocessing import Value
 from wsgiref.validate import validator
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SelectField, DateField, TextAreaField, SubmitField, PasswordField, EmailField
+from wtforms import StringField, IntegerField, SelectField, DateField, TextAreaField, HiddenField, EmailField,DecimalField
 from wtforms.validators import DataRequired, NumberRange, Email
+import wtforms.widgets
 from datetime import date, timedelta
 
 class UsuarioForm(FlaskForm):
@@ -18,16 +19,21 @@ class UsuarioForm(FlaskForm):
         id="selectTipoUsuario",
         name="selectTipoUsuario"
     )
+    usuario = StringField(
+        "Usuario",
+        validators=[
+            DataRequired(message="Ingrese el nombre de usuario.")
+        ],
+        id="txtUsuario",
+        name="txtUsuario"
+    )
     nombres = StringField(
         "Nombres",
         validators=[
             DataRequired(message="Ingrese sus nombres.")
         ],
         id="txtNombre",
-        name="txtNombre",
-        render_kw={
-            "placeholder": "Ingrese sus nombres",
-        }
+        name="txtNombre"
     )
     apellidos = StringField(
         "Apellidos",
@@ -35,10 +41,7 @@ class UsuarioForm(FlaskForm):
             DataRequired(message="Ingrese sus apellidos.")
         ],
         id="txtApellido",
-        name="txtApellido",
-        render_kw={
-            "placeholder": "Ingrese sus apellidos",
-        }
+        name="txtApellido"
     )
     cedula = IntegerField(
         "Cédula",
@@ -46,10 +49,7 @@ class UsuarioForm(FlaskForm):
             DataRequired(message="Ingrese su cédula.")
         ],
         id="txtCedula",
-        name="txtCedula",
-        render_kw={
-            "placeholder": "Sin puntos ni espacios",
-        }
+        name="txtCedula"
     )
     email = EmailField(
         "Email",
@@ -58,10 +58,7 @@ class UsuarioForm(FlaskForm):
             Email(message="Ingrese un email válido.")
         ],
         id="txtEmail",
-        name="txtEmail",
-        render_kw={
-            "placeholder": "Ingrese su correo electrónico",
-        }
+        name="txtEmail"
     )
     direccion = StringField(
         "Dirección",
@@ -69,10 +66,15 @@ class UsuarioForm(FlaskForm):
             DataRequired(message="Ingrese su dirección.")
         ],
         id="txtDireccion",
-        name="txtDireccion",
-        render_kw={
-            "placeholder": "Ingrese su dirección",
-        }
+        name="txtDireccion"
+    )
+    ciudad = StringField(
+        "Ciudad",
+        validators=[
+            DataRequired(message="Ingrese la ciudad.")
+        ],
+        id="txtCiudad",
+        name="txtCiudad"
     )
     celular = IntegerField(
         "Celular",
@@ -80,85 +82,93 @@ class UsuarioForm(FlaskForm):
             DataRequired(message="Ingrese su número de celular.")
         ],
         id="txtCelular",
-        name="txtCelular",
-        render_kw={
-            "placeholder": "Ingrese su celular",
-        }
+        name="txtCelular"
     )
-    password = PasswordField(
+    password = StringField(
         "Contraseña",
         validators=[
             DataRequired(message="Ingrese su contraseña.")
         ],
         id="txtPassword",
         name="txtPassword",
-        render_kw={
-            "placeholder": "Ingrese su contraseña",
-            "autocomplete": "off"
-        }
+        widget=wtforms.widgets.PasswordInput(hide_value=False)
     )
 
-    btn_guardar = SubmitField("Guardar")
+    #btn_guardar = SubmitField("Guardar")
 #fin usuario form
 
 
 class ReservaForm(FlaskForm):
-    cliente = SelectField(
-        "Cliente", 
-        validators=[ DataRequired("Seleccionar a un cliente.") ],
-        choices = [(0, "Seleccione un cliente")],
+    reserva_hidden = HiddenField(
+        "",
+        validators=[DataRequired("No hay cliente relacionado. Por favor volver a buscar.")],
+        id="hiddenReserva",
+        name="hiddenReserva"
+    )
+
+    busqueda_cliente = StringField(
+        "Buscar cliente",
+        validators=[ DataRequired("Ingresar los datos requeridos para la busqueda del cliente.") ],
         render_kw = {
-            "class": "form-control select-border"
+            "class": "form-control",
+            "placeholder": "Ingresar usuario, cédula o email",
+            "autofocus": ""
         },
-        id="selectCliente",
-        name="selectCliente"
+        id="txtBusquedaCliente",
+        name="txtBusquedaCliente"
+    )
+
+    cliente = StringField(
+        "Cliente",
+        render_kw = {
+            "class": "form-control",
+            "readonly": "readonly"
+        },
+        id="txtCliente",
+        name="txtCliente"
     )
 
     habitacion = SelectField(
         "Habitación",
-        validators=[ DataRequired("Seleccionar una habitación.") ],
-        choices = [(0, "Seleccione un habitación")],
+        choices = [],
         render_kw = {
             "class": "form-control select-border"
         },
         id="selectHabitacion",
-        name="selectHabitacion"
+        name="selectHabitacion",
+        coerce=int
     )
-
-    hoy = date.today()
 
     fecha_ingreso = DateField(
         "Fecha de ingreso",
         validators=[ DataRequired("Seleccionar fecha de ingreso.") ],
         render_kw = {
-            "class": "form-control",
-            "value": hoy,
-            "min": hoy
+            "class": "form-control date-field",
+            "data-type": "llegada"
         },
         id="txtFechaIngreso",
         name="txtFechaIngreso"
     )
 
-    tomorrow = hoy + timedelta(days=1)
-
     fecha_salida = DateField(
         "Fecha de salida",
         validators=[ DataRequired("Seleccionar fecha de salida.") ],
         render_kw = {
-            "class": "form-control",
-            "value": tomorrow,
-            "min": tomorrow
+            "class": "form-control date-field",
+            "data-type": "salida"
         },
         id="txtFechaSalida",
         name="txtFechaSalida"
     )
 
     precio = IntegerField(
-        "Precio",
+        "Total",
+        validators=[DataRequired("No se hace envio del total.")],
         render_kw={
             "class": "form-control",
             "readonly": ""
-        }
+        },
+        id="txtTotalReserva"
     )
 
 
@@ -179,22 +189,12 @@ class ComentarioForm(FlaskForm):
         }
     )
 
-    comentario = TextAreaField(
-        "Comentario",
-        validators=[DataRequired("Debe ingresar un comentario.")],
-        render_kw = {
-            "class": "form-control",
-            "rows": "4"
-        }
-    )
-
-class HabitacionForm(FlaskForm):
-    numero = StringField(
-        "Habitación",
+    calificacion = DecimalField(
+        "Calificación",
         render_kw={
-            "readonly": "",
             "class": "form-control"
-        }
+        },
+        places=1
     )
 
     comentario = TextAreaField(

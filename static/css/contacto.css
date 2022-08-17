@@ -12,7 +12,6 @@
     --font1: 'Mada', sans-serif;
     --font2: 'Literata', serif;
 }
-
 .row {
     display: flex;
     width: 100%;
@@ -20,37 +19,26 @@
     gap: 40px;
     height: auto;
 }
-
 .map {
     width: 40%;
 }
-
-
-.section-contact .map h2 {
+.section-contact .info h2 {
     color: var(--primary);
     margin-bottom: 8px;
-
 }
-
-.section-contact .map p {
+.section-contact .info p {
     color: var(--dark);
     font-size: var(--md);
     margin-bottom: 24px;
 }
-
-.section-contact .map hr {
+.section-contact .info hr {
     border-top: var(--secondary);
     border-width: 3px;
     border-color: var(--secondary);
 }
-
-* {
-    box-sizing: border-box;
-}
-
 .modal-container {
     /* display: none; */
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     position: fixed;
     opacity: 0;
@@ -62,7 +50,6 @@
     width: 100%;
     transition: opacity 0.3s ease ;
 }
-
 .modal-container.show {
     pointer-events: auto;
     opacity: 1;
@@ -72,49 +59,42 @@
     background-color: var(--light);
     margin: 0 auto;
     padding: 30px 60px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
+    box-shadow: 0 0px 4px rgba(0, 0, 0, 0.6);
+    border-radius: 20px;
     width: 600px;
     height: 500px;
     max-height: 100%;
     max-width: 100%;
-    text-align: center;
-    
+    text-align: center;    
 }
-
 .modal h2{
-    color: var(--primary);
+    color: var(--secondary);
 }
-
-
-
-
 .formulario {
     display: flex;
     flex-direction: column;
-    line-height: 3;
-    align-items: center;
-    
-    
-    
-    
+    align-items: center;    
 }
-
 .formulario .formulario-input {
     width: 100%;
 }
-
-input, textarea{
+.input, .textarea {
     border-radius: 10px;
-    font-size: 20px;
-    font-family: var(--font2);
+    font-size: var(--md);
     width: 100%;
-    padding: 2px 5px;
+    padding: 0 8px;
+    margin-bottom: 16px;
 }
-textarea {
+.input {
+    height: 45px;
+    border: 1px solid var(--primary);
+    border-radius: 8px; 
+}
+.textarea {
     resize: none;
+    border: 1px solid var(--primary);
+    border-radius: 8px; 
 }
-
 .actions {
     display: flex;
     justify-content: center;

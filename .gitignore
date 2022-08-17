@@ -1,4 +1,5 @@
 /.vscode/
 /venv/
 __pycache__
-db_dubai_hotel.db
+*.db
+/1-frontend-sprint-2/

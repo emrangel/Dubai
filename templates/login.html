@@ -2,6 +2,8 @@
 
 {% block estilos_propios %}
     <link rel="stylesheet" href="{{ url_for('static', filename='./css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='./css/tablet/login-tablet.css') }}" media="(max-width:900px)">
+    <link rel="stylesheet" href="{{ url_for('static', filename='./css/mobile/login-mobile.css') }}" media="(max-width:580px)">
 {% endblock %}
 
 {% block principal %}
@@ -26,15 +28,21 @@
 
             <!-- Mensajes -->
             {% with mensajes = get_flashed_messages() %}
-               {% if mensajes %}
+               {% if mensajes or data.form.errors %}
                   <div class="mensaje is-danger w-80">
+                     <!-- Mensajes flash -->
                      {% for mensaje in mensajes %}
                         {{ mensaje }}
+                     {% endfor %}
+                     
+                     <!-- Mensaje de error del form -->
+                     {% for field, errors in data.form.errors.items() %}
+                        {{ ', '.join(errors) }}
                      {% endfor %}
                   </div>
                {% endif %}
             {% endwith %}
-
+            
             <!-- Form Login -->
             <form action="/mi-cuenta/login" method="post">
                <!-- Genero mi secret key para evitar ataques csrf -->
@@ -77,6 +85,21 @@
             <a href="/" class="btn btn-secondary btn-sm text-white">
                Ir a la página principal
             </a>
+            <div class="users-example-info">
+               <h4 class="text-secondary">Cuentas ejemplo:</h4>
+               <p class="linea2"></p>
+               <ul>
+                  <li>
+                     <strong class="text-secondary">Superadministrador: </strong> User123, <em>Clave: 123456</em>
+                  </li>
+                  <li>
+                     <strong class="text-secondary">Administrador: </strong> Mzapata, <em>Clave: 123123</em>
+                  </li>
+                  <li>
+                     <strong class="text-secondary">Cliente: </strong> Pperez, <em>Clave: 987654</em>
+                  </li>
+               </ul>
+            </div>
          </div>
       </section>
    </main>
